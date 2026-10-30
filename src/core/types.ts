@@ -1,6 +1,3 @@
-import * as THREE from 'three';
-import type { BoneName } from './types';
-
 export interface CameraPreset {
   name: string;
   position: [number, number, number];
@@ -78,5 +75,3 @@ export interface AppState {
   charB: CharacterOptions;
   quality: QualitySettings;
 }
-
-export type Vec3Like = THREE.Vector3 | [number, number, number];
