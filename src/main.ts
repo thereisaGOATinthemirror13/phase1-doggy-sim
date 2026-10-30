@@ -12,6 +12,27 @@ import { createSettingsUI } from './ui/settings';
 import { Ambience } from './audio/ambience';
 import type { AppState, PoseKeyframe } from './core/types';
 
+
+function showErrorOverlay(title: string, message: string, stack?: string): void {
+  const el = document.createElement('div');
+  el.style.cssText = [
+    'position:fixed', 'inset:0', 'z-index:9999', 'background:#fff', 'color:#c00',
+    'font:13px/1.5 monospace', 'padding:16px', 'overflow:auto', 'white-space:pre-wrap',
+    'word-break:break-word',
+  ].join(';');
+  el.textContent = `${title}\n${message}${stack ? '\n\n' + stack : ''}`;
+  document.body.appendChild(el);
+}
+
+window.addEventListener('error', (e) => {
+  showErrorOverlay('JS Error', String(e.message), e.error?.stack);
+});
+window.addEventListener('unhandledrejection', (e) => {
+  const r = e.reason as { message?: string; stack?: string } | undefined;
+  showErrorOverlay('Unhandled Promise Rejection', String(r?.message ?? e.reason), r?.stack);
+});
+
+function initApp(): void {
 const app = document.getElementById('app')!;
 
 const state: AppState = {
@@ -149,3 +170,10 @@ addEventListener('resize', () => {
 });
 
 frame();
+}
+
+try {
+  initApp();
+} catch (err) {
+  showErrorOverlay('Bootstrap Exception', String(err instanceof Error ? err.message : err), err instanceof Error ? err.stack : undefined);
+}
